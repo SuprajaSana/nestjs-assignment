@@ -11,9 +11,14 @@ export class TasksService {
   ) {}
 
   async create(dto: CreateTaskDto) {
-    const task = this.taskRepository.create(dto);
-
-    return await this.taskRepository.save(task);
+     var dt = new Date().toISOString();
+     var dtarr = dt.split('T');
+     if (dto.due_date > dtarr[0]) {
+       const task = this.taskRepository.create(dto);
+       return await this.taskRepository.save(task);
+     } else {
+        return { message: 'Please enter valid date' };
+     }
   }
 
   findAll() {
@@ -27,11 +32,17 @@ export class TasksService {
   async update(id: number, dto: CreateTaskDto) {
     const task = await this.taskRepository.findOneBy({ id: id });
     if (task) {
-      task.description = dto.description;
-      task.due_date = dto.due_date;
-      task.assignee = dto.assignee;
-      task.status = dto.status;
-      return await this.taskRepository.save(task);
+      var dt = new Date().toISOString();
+      var dtarr = dt.split('T');
+      if (task.due_date > dtarr[0]) {
+        task.description = dto.description;
+        task.due_date = dto.due_date;
+        task.assignee = dto.assignee;
+        task.status = dto.status;
+        return await this.taskRepository.save(task);
+      } else {
+        return { message: 'Please enter vaild date' };
+      }
     }
   }
 }
